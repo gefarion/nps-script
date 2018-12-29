@@ -9,7 +9,6 @@ import os
 import sys
 
 REGIONS = ('us', 'eu', 'jp', 'asia')
-MIN_PSV_FIRMWARE = 3.36
 
 GAMES_TSV_FILENAME = '%s_GAMES.tsv'
 GAMES_TSV_URL = 'https://nopaystation.com/tsv/%s_GAMES.tsv'

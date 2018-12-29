@@ -3,6 +3,7 @@ A simple Python script to download items from https://nopaystation.com/
 
 Notes:
 - Require python 2.7
+- Require `pkg2zip` installed
 
 Examples:
 
