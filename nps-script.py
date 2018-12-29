@@ -65,7 +65,7 @@ def fmt_item(item):
 def main(args):
 
     config = PLATFORMS[args.platform]['games']
-    items = load_items(config)
+    items = load_items(config, args)
     assert items
 
     if args.list:
@@ -110,9 +110,9 @@ def download_item(items, args):
         subprocess.check_call([PKG2ZIP, "-x", tmp.name, item.get('zrif', '')])
 
 
-def load_items(config):
+def load_items(config, args):
 
-    if not os.path.isfile(config['filename']):
+    if args.refresh or not os.path.isfile(config['filename']):
         print 'Downloading database from %s\n' % config['url']
         subprocess.check_call(["wget", config['url'], "-O", config['filename']])
 
@@ -123,15 +123,17 @@ def load_items(config):
         return list(reader)
 
 
-parser = argparse.ArgumentParser(description='A simple Python script to download items from https://nopaystation.com/')
+parser = argparse.ArgumentParser(description='A simple Python script to download games from https://nopaystation.com/')
 
-parser.add_argument('--platform', '-p', type=str, required=True, choices=PLATFORMS.keys())
+parser.add_argument('--platform', '-p', type=str, required=True, choices=PLATFORMS.keys(), help='select the platform')
 
-parser.add_argument('--download', '-d', type=str, required=False)
+parser.add_argument('--download', '-d', type=str, required=False, help='download a game')
 
-parser.add_argument('--list', '-l', action='store_true')
-parser.add_argument('--region', '-r', type=str, required=False, choices=REGIONS)
-parser.add_argument('--filter', '-f', type=str, required=False)
+parser.add_argument('--list', '-l', action='store_true', help='list games')
+parser.add_argument('--region', '-r', type=str, required=False, choices=REGIONS, help='filter games by region')
+parser.add_argument('--filter', '-f', type=str, required=False, help='filter games by name')
+
+parser.add_argument('--refresh', '-R', action='store_true', help='refresh NPS database')
 
 main(parser.parse_args())
 sys.exit(0)
