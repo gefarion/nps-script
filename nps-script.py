@@ -7,6 +7,7 @@ import tempfile
 import subprocess
 import os
 import sys
+from distutils.spawn import find_executable
 
 REGIONS = ('us', 'eu', 'jp', 'asia')
 
@@ -64,16 +65,18 @@ def fmt_item(item):
 
 def main(args):
 
+    if not find_executable(args.pkg2zip):
+        raise Exception("pkg2zip not found, add it to the default PATH or define a custom PATH using '-P'")
+
     config = PLATFORMS[args.platform]['games']
     items = load_items(config, args)
-    assert items
 
     if args.list:
         list_items(items, args)
     elif args.download:
         download_item(items, args)
     else:
-        raise Exception("Use: --download TITLE_ID or --list")
+        raise Exception("use '--download TITLE_ID' or '--list'")
 
 
 def list_items(items, args):
@@ -101,13 +104,13 @@ def download_item(items, args):
     try:
         item = [item for item in items if item['title_id'] == title_id][0]
     except:
-        raise Exception('Item %s not found' % title_id)
+        raise Exception('item %s not found' % title_id)
 
     with tempfile.NamedTemporaryFile() as tmp:
         print 'Downloading: %s\n' % fmt_item(item)
         subprocess.check_call(["wget", item['pkg_url'], "-O", tmp.name])
         print 'Extracting pkg...\n'
-        subprocess.check_call([PKG2ZIP, "-x", tmp.name, item.get('zrif', '')])
+        subprocess.check_call([args.pkg2zip, "-x", tmp.name, item.get('zrif', '')])
 
 
 def load_items(config, args):
@@ -127,13 +130,18 @@ parser = argparse.ArgumentParser(description='A simple Python script to download
 
 parser.add_argument('--platform', '-p', type=str, required=True, choices=PLATFORMS.keys(), help='select the platform')
 
-parser.add_argument('--download', '-d', type=str, required=False, help='download a game')
+parser.add_argument('--download', '-d', type=str, required=False, help='download a game', metavar='TITLE_ID')
 
 parser.add_argument('--list', '-l', action='store_true', help='list games')
 parser.add_argument('--region', '-r', type=str, required=False, choices=REGIONS, help='filter games by region')
 parser.add_argument('--filter', '-f', type=str, required=False, help='filter games by name')
 
-parser.add_argument('--refresh', '-R', action='store_true', help='refresh NPS database')
+parser.add_argument('-R', dest='refresh', action='store_true', help='refresh NPS database')
+parser.add_argument('-P', type=str, dest='pkg2zip', default=PKG2ZIP, metavar='PATH_TO_PKG2ZIP', help='custom path to pkg2zip')
 
-main(parser.parse_args())
+try:
+    main(parser.parse_args())
+except Exception as e:
+    print "%s: error: %s" % (os.path.basename(__file__), e)
+
 sys.exit(0)
