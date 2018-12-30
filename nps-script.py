@@ -45,6 +45,7 @@ PLATFORMS = {
 
 
 def fmt_size(num, suffix='B'):
+
     try:
         num = int(num)
     except:
@@ -58,6 +59,7 @@ def fmt_size(num, suffix='B'):
 
 
 def fmt_item(item):
+
     return "[%s-%s] %s (%s)" % (
             item['region'], item['title_id'], item['name'], fmt_size(item['file_size'])
         )
@@ -80,6 +82,7 @@ def main(args):
 
 
 def list_items(items, args):
+
     filter = args.filter.lower() if args.filter else None
     region = args.region.upper() if args.region else None
 
@@ -93,7 +96,6 @@ def list_items(items, args):
 
         print fmt_item(item)
 
-    return 0
 
 def download_item(items, args):
 
