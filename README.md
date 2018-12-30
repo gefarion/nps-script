@@ -21,7 +21,7 @@ Examples:
 `python nps-script.py -p psp -d EU-NPEH00134`
 
 - Use a custom path for `pkg2zip`:
-`python nps-script.py -p psp -d EU-NPEH00134` -P /opt/bin/pkg2zip
+`python nps-script.py -p psp -d EU-NPEH00134 -P /opt/bin/pkg2zip`
 
 - Refresh the NPS database:
 `python nps-script.py -p psp -l -R`
